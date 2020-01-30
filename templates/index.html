@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
+    <script src="{% static 'js/vue.min.js' %}"></script>
+    <script src="{% static 'js/ajax_setup.js' %}"></script>
+</head>
+{#    解决冲突 Django Vue {{ }} 有数据 不显示#}
+{% verbatim %}
+<div id="app">
+    <!--搜索条件-->
+    <table>
+        <tr>
+            <td>用户账号</td>
+            <td><input type="text"/></td>
+            <td><input type="button" value="搜索"></td>
+        </tr>
+    </table>
+    <!--列表-->
+    <table>
+        <tr>
+            <td>用户账户</td>
+            <td>用户密码</td>
+            <td>操作</td>
+        </tr>
+        <tr v-for="item in users">
+            <td>{{ item.UserNO }}</td>
+            <td>{{ item.Password }}</td>
+        </tr>
+    </table>
+</div>
+{% endverbatim %}
+</body>
+<script type="text/javascript">
+
+    var userList = [];
+    $.ajax({
+        url: "/getList/",
+        type: "post",
+        async: false,
+        success: function (res) {
+            if (res.code == "200") {
+                userList = res.data;
+            } else {
+            }
+        },
+    });
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            users: userList
+        },
+        method: {}
+    });
+</script>
+</html>
