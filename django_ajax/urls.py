@@ -20,7 +20,6 @@ from django.urls import path
 from DjangoAjax import views
 
 urlpatterns = [
-    url(r'^admin/$', admin.site.urls),
     url(r'^index/$', views.index, name="index"),  #首页
     url(r'^getList/', views.getList), #获取用户列表
 ]
