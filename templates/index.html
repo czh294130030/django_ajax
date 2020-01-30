@@ -14,46 +14,59 @@
     <!--搜索条件-->
     <table>
         <tr>
-            <td>用户账号</td>
-            <td><input type="text"/></td>
-            <td><input type="button" value="搜索"></td>
+            <td>账户</td>
+            <td><input type="text" v-model="search_model.user_no"/></td>
+            <td>姓名</td>
+            <td><input type="text" v-model="search_model.name"/></td>
+            <td><input type="button" value="搜索" v-on:click="getList"></td>
         </tr>
     </table>
     <!--列表-->
     <table>
         <tr>
-            <td>用户账户</td>
-            <td>用户密码</td>
-            <td>操作</td>
+            <th>账户</th>
+            <th>姓名</th>
+            <th>年龄</th>
+            <th>密码</th>
+            <th>操作</th>
         </tr>
         <tr v-for="item in users">
-            <td>{{ item.UserNO }}</td>
-            <td>{{ item.Password }}</td>
+            <td>{{ item.user_no }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.age }}</td>
+            <td>{{ item.password }}</td>
         </tr>
     </table>
 </div>
 {% endverbatim %}
 </body>
 <script type="text/javascript">
-
-    var userList = [];
-    $.ajax({
-        url: "/getList/",
-        type: "post",
-        async: false,
-        success: function (res) {
-            if (res.code == "200") {
-                userList = res.data;
-            } else {
-            }
-        },
-    });
     var vm = new Vue({
         el: '#app',
         data: {
-            users: userList
+            search_model: {user_no: '', name: ''},//搜索条件
+            users: [],//查询结果
         },
-        method: {}
+        created: function () {
+            this.getList();
+        },
+        methods: {
+            getList() {
+                vm = this;
+                $.ajax({
+                    url: "/getList/",
+                    type: "post",
+                    data: {search_str: JSON.stringify(vm.search_model)},
+                    success: function (res) {
+                        if (res.code == "200") {
+                            vm.users = res.data;
+                        } else {
+                            alert(res.err_msg)
+                        }
+                    },
+                });
+            }
+        }
     });
 </script>
 </html>
