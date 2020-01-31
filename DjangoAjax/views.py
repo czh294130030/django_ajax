@@ -14,6 +14,24 @@ def index(request):
     return render(request, "index.html", locals())
 
 
+# 添加用户
+def add(request):
+    if request.method == "GET":
+        return render(request, 'add.html', locals())
+    res = {"code": "200", "err_msg": "", "data": ""};
+    try:
+        user_str = request.POST.get('user_str');
+        user_json = json.loads(user_str);
+        User.objects.create(user_no=user_json['user_no']
+                            , name=user_json['name']
+                            , age=user_json['age']
+                            , password=user_json['password']);
+    except Exception:
+        res["code"] = "500";
+        res["err_msg"] = '添加用户失败';
+    return JsonResponse(res);
+
+
 # 获取用户列表
 def getList(request):
     if request.method == 'POST':

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>学生列表</title>
+    <title>用户列表</title>
     <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
     <script src="{% static 'js/vue.min.js' %}"></script>
     <script src="{% static 'js/ajax_setup.js' %}"></script>
@@ -20,6 +20,7 @@
             <td>姓名</td>
             <td><input type="text" v-model="search_model.name"/></td>
             <td><input type="button" value="搜索" v-on:click="getList"></td>
+            <td><input type="button" value="添加" v-on:click="gotoAdd"></td>
         </tr>
     </table>
     <!--列表-->
@@ -55,7 +56,7 @@
         methods: {
             getList() {
                 vm = this;
-                vm.loading_index = layer.load(0, {shade: false});
+                vm.loading_index = layer.load(0, {shade: 0.5});
                 $.ajax({
                     url: "/getList/",
                     type: "post",
@@ -64,13 +65,15 @@
                         if (data.code == "200") {
                             vm.users = data.data;
                         } else {
-                            layer.alert(res.err_msg, {icon: 5});
+                            layer.alert(data.err_msg, {icon: 5});
                         }
 
                     }, complete: function () {
                         layer.close(vm.loading_index);
                     }
                 });
+            }, gotoAdd() {//跳转到添加页面
+                window.location.href = '/add';
             }
         }
     });

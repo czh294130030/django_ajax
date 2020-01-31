@@ -20,6 +20,7 @@ from django.urls import path
 from DjangoAjax import views
 
 urlpatterns = [
-    url(r'^index/$', views.index, name="index"),  #首页
-    url(r'^getList/', views.getList), #获取用户列表
+    url(r'^index/$', views.index, name="index"),  # 首页
+    url(r'^getList/', views.getList),  # 获取用户列表
+    url(r'^add/$', views.add, name="add"),  # 添加
 ]
