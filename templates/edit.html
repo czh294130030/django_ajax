@@ -3,11 +3,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>添加用户</title>
+    <title>修改用户</title>
     <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
     <script src="{% static 'js/vue.min.js' %}"></script>
     <script src="{% static 'js/ajax_setup.js' %}"></script>
     <script src="{% static 'js/layer-v3.1.1/layer/layer.js' %}"></script>
+    <script src="{% static 'js/common.js' %}"></script>
 </head>
 <body>
 {#    解决冲突 Django Vue {{ }} 有数据 不显示#}
@@ -32,7 +33,7 @@
             <td><input type="text" v-model="user.password"/></td>
         </tr>
         <tr>
-            <td><input type="button" value="提交" v-on:click="add"/></td>
+            <td><input type="button" value="提交" v-on:click="edit"/></td>
             <td><input type="button" value="取消" v-on:click="gotoIndex"/></td>
         </tr>
     </table>
@@ -47,26 +48,47 @@
             user: {user_no: '', name: '', age: 18, password: ''},
         },
         created: function () {
+            var id = common.get_id(id);//从url获取修改主键
+            this.getItem(id);
         },
         methods: {
-            add() {//添加
+            getItem(id) {//获取对象
+                vm = this;
+                vm.loading_index = layer.load(0, {shade: 0.5});
+                $.ajax({
+                    url: "/getItem/",
+                    type: "post",
+                    data: {id: id},
+                    success: function (res) {
+                        if (res.code == "200") {
+                            vm.user = res.data;
+                        } else {
+                            layer.alert(res.err_msg, {icon: 5});
+                        }
+
+                    }, complete: function () {
+                        layer.close(vm.loading_index);
+                    }
+                });
+            },
+            edit() {
                 if (!this.check()) {
                     return;
                 }
                 vm = this;
                 vm.loading_index = layer.load(0, {shade: 0.5});
                 $.ajax({
-                    url: "/add/",
+                    url: "/edit/",
                     type: "post",
                     data: {user_str: JSON.stringify(vm.user)},
-                    success: function (res) {
-                        if (res.code == "200") {
+                    success: function (data) {
+                        if (data.code == "200") {
                             layer.alert('添加成功', {icon: 6}, function (index) {
                                 layer.close(index);
                                 vm.gotoIndex();
                             });
                         } else {
-                            layer.alert(res.err_msg, {icon: 5});
+                            layer.alert(data.err_msg, {icon: 5});
                         }
 
                     }, complete: function () {

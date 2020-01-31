@@ -1,15 +1,18 @@
 import json
-import sys
+from datetime import datetime
 
+from django.contrib.postgres import serializers
 from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 
 # Create your views here.
 from DjangoAjax.models import User
 
-
 # 路由跳转到首页
+from PublicMethod.common import model2json
+
+
 def index(request):
     return render(request, "index.html", locals())
 
@@ -25,11 +28,34 @@ def add(request):
         User.objects.create(user_no=user_json['user_no']
                             , name=user_json['name']
                             , age=user_json['age']
-                            , password=user_json['password']);
+                            , password=user_json['password']
+                            , create_date=datetime.now()
+                            , modify_date=datetime.now());
     except Exception:
         res["code"] = "500";
         res["err_msg"] = '添加用户失败';
     return JsonResponse(res);
+
+
+# 修改用户
+def edit(request, id):
+    if request.method == "GET":
+        return render(request, 'edit.html', locals());
+
+
+# 根据主键获取对象
+def getItem(request):
+    if request.method == 'POST':
+        res = {"code": "200", "err_msg": "", "data": ""};
+        try:
+            id = request.POST.get('id');
+            item = User.objects.get(id=id);
+            item_json = model2json(item);
+            res['data'] = item_json;
+        except Exception:
+            res["code"] = "500";
+            res["err_msg"] = '获取用户失败';
+        return JsonResponse(res);
 
 
 # 获取用户列表
@@ -42,7 +68,8 @@ def getList(request):
             search_user = json.loads(search_str);
             # 根据查询条件查询
             userList = User.objects.filter(
-                Q(user_no__contains=search_user["user_no"]) & Q(name__contains=search_user["name"])).values();
+                Q(user_no__contains=search_user["user_no"]) & Q(
+                    name__contains=search_user["name"])).order_by('-modify_date').values();
             res["data"] = list(userList);
         except Exception:
             res["code"] = "500";

@@ -30,6 +30,7 @@
             <th>姓名</th>
             <th>年龄</th>
             <th>密码</th>
+            <th>修改时间</th>
             <th>操作</th>
         </tr>
         <tr v-for="item in users">
@@ -37,6 +38,11 @@
             <td>{{ item.name }}</td>
             <td>{{ item.age }}</td>
             <td>{{ item.password }}</td>
+            <td>{{ item.modify_date }}</td>
+            <td>
+                <a href="javascript:void(0);" v-on:click="gotoEdit(item.id)">修改</a>
+                <a href="javascript:void(0);" v-on:click="del(item.id)">删除</a>
+            </td>
         </tr>
     </table>
 </div>
@@ -61,11 +67,11 @@
                     url: "/getList/",
                     type: "post",
                     data: {search_str: JSON.stringify(vm.search_model)},
-                    success: function (data) {
-                        if (data.code == "200") {
-                            vm.users = data.data;
+                    success: function (res) {
+                        if (res.code == "200") {
+                            vm.users = res.data;
                         } else {
-                            layer.alert(data.err_msg, {icon: 5});
+                            layer.alert(res.err_msg, {icon: 5});
                         }
 
                     }, complete: function () {
@@ -74,6 +80,10 @@
                 });
             }, gotoAdd() {//跳转到添加页面
                 window.location.href = '/add';
+            }, gotoEdit(id) {//跳转到编辑页面
+                window.location.href = '/edit/' + id;
+            }, del(id) {//删除
+                alert(id);
             }
         }
     });

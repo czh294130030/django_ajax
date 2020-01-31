@@ -20,7 +20,10 @@ from django.urls import path
 from DjangoAjax import views
 
 urlpatterns = [
+    # 用户
     url(r'^index/$', views.index, name="index"),  # 首页
-    url(r'^getList/', views.getList),  # 获取用户列表
     url(r'^add/$', views.add, name="add"),  # 添加
+    url(r'^edit/(\d+)$', views.edit, name="edit"),  # 修改
+    url(r'getList', views.getList),  # 获取列表
+    url(r'getItem', views.getItem),  # 获取对象
 ]
