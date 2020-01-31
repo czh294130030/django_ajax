@@ -3,10 +3,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>学生列表</title>
     <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
     <script src="{% static 'js/vue.min.js' %}"></script>
     <script src="{% static 'js/ajax_setup.js' %}"></script>
+    <script src="{% static 'js/layer-v3.1.1/layer/layer.js' %}"></script>
 </head>
 {#    解决冲突 Django Vue {{ }} 有数据 不显示#}
 {% verbatim %}
@@ -44,6 +45,7 @@
     var vm = new Vue({
         el: '#app',
         data: {
+            loading_index: '',
             search_model: {user_no: '', name: ''},//搜索条件
             users: [],//查询结果
         },
@@ -53,17 +55,21 @@
         methods: {
             getList() {
                 vm = this;
+                vm.loading_index = layer.load(0, {shade: false});
                 $.ajax({
                     url: "/getList/",
                     type: "post",
                     data: {search_str: JSON.stringify(vm.search_model)},
-                    success: function (res) {
-                        if (res.code == "200") {
-                            vm.users = res.data;
+                    success: function (data) {
+                        if (data.code == "200") {
+                            vm.users = data.data;
                         } else {
-                            alert(res.err_msg)
+                            layer.alert(res.err_msg, {icon: 5});
                         }
-                    },
+
+                    }, complete: function () {
+                        layer.close(vm.loading_index);
+                    }
                 });
             }
         }
