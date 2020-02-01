@@ -41,6 +41,21 @@ def add(request):
 def edit(request, id):
     if request.method == "GET":
         return render(request, 'edit.html', locals());
+    res = {"code": "200", "err_msg": "", "data": ""};
+    try:
+        item = User.objects.get(id=id);
+        user_str = request.POST.get('user_str');
+        user_json = json.loads(user_str);
+        item.user_no = user_json['user_no'];
+        item.name = user_json['name'];
+        item.password = user_json['password'];
+        item.age = user_json['age'];
+        item.modify_date = datetime.now();
+        item.save();
+    except Exception:
+        res["code"] = "500";
+        res["err_msg"] = '修改用户失败';
+    return JsonResponse(res);
 
 
 # 根据主键获取对象
