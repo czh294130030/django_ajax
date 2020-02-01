@@ -4,11 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>用户列表</title>
+    <link rel="stylesheet" href="{% static 'js/custom-pagination/custom-pagination.min.css' %}"/>
     <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
     <script src="{% static 'js/vue.min.js' %}"></script>
     <script src="{% static 'js/ajax_setup.js' %}"></script>
     <script src="{% static 'js/layer-v3.1.1/layer/layer.js' %}"></script>
     <script src="{% static 'js/common.js' %}"></script>
+    <script src="{% static 'js/custom-pagination/custom-pagination.min.js' %}"></script>
 </head>
 {#    解决冲突 Django Vue {{ }} 有数据 不显示#}
 {% verbatim %}
@@ -20,7 +22,7 @@
             <td><input type="text" v-model="search_model.user_no"/></td>
             <td>姓名</td>
             <td><input type="text" v-model="search_model.name"/></td>
-            <td><input type="button" value="搜索" v-on:click="getList"></td>
+            <td><input type="button" value="搜索" v-on:click="search"></td>
             <td><input type="button" value="添加" v-on:click="gotoAdd"></td>
         </tr>
     </table>
@@ -47,6 +49,7 @@
         </tr>
     </table>
 </div>
+<div id="page" class="page"></div>
 {% endverbatim %}
 </body>
 <script type="text/javascript">
@@ -54,7 +57,7 @@
         el: '#app',
         data: {
             loading_index: '',
-            search_model: {user_no: '', name: ''},//搜索条件
+            search_model: {user_no: '', name: '', currentPage: 1, itemsPerPage: 5, is_init: true},//搜索条件
             users: [],//查询结果
         },
         filters: {//时间过滤器
@@ -73,7 +76,11 @@
             this.getList();
         },
         methods: {
-            getList() {
+            search() {
+                this.search_model.currentPage=1;
+                this.search_model.is_init = true;
+                this.getList();
+            }, getList() {
                 vm = this;
                 vm.loading_index = layer.load(0, {shade: 0.5});
                 $.ajax({
@@ -83,6 +90,22 @@
                     success: function (res) {
                         if (res.code == "200") {
                             vm.users = res.data;
+                            totalPage = res.total % vm.search_model.itemsPerPage == 0
+                                ? res.total / vm.search_model.itemsPerPage
+                                : res.total / vm.search_model.itemsPerPage + 1;
+                            if (vm.search_model.is_init) {//初始化加载分页控件
+                                var box = new CustomPagination('#page', {
+                                    total: totalPage,//总页数
+                                    changePage: function (pageNum) {//切换页码成功回调
+                                        if (!vm.search_model.is_init) {//初始化的时候无需调用获取列表接口
+                                            vm.search_model.currentPage = pageNum;
+                                            vm.getList();
+                                        } else {
+                                            vm.search_model.is_init = false;
+                                        }
+                                    }
+                                });
+                            }
                         } else {
                             layer.alert(res.err_msg, {icon: 5});
                         }
@@ -105,6 +128,8 @@
                         type: "post",
                         success: function (res) {
                             if (res.code == "200") {
+                                vm.search_model.currentPage=1;
+                                vm.search_model.is_init = true;
                                 vm.getList();
                             } else {
                                 layer.alert(res.err_msg, {icon: 5});

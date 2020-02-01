@@ -1,7 +1,6 @@
 import json
 from datetime import datetime
 
-from django.contrib.postgres import serializers
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -88,7 +87,7 @@ def getItem(request):
 # 获取用户列表
 def getList(request):
     if request.method == 'POST':
-        res = {"code": "200", "err_msg": "", "data": ""};
+        res = {"code": "200", "err_msg": "", "data": "", "total": 0};
         try:
             # 将字符串转化成对象
             search_str = request.POST.get('search_str');
@@ -97,7 +96,13 @@ def getList(request):
             userList = User.objects.filter(
                 Q(user_no__contains=search_user["user_no"]) & Q(
                     name__contains=search_user["name"])).order_by('-modify_date').values();
-            res["data"] = list(userList);
+            currentPage = int(search_user["currentPage"]);
+            itemsPerPage = int(search_user["itemsPerPage"]);
+            startIndex = (currentPage - 1) * itemsPerPage;
+            endIndex = currentPage * itemsPerPage;
+            pageList = userList[startIndex:endIndex];
+            res["data"] = list(pageList);
+            res["total"] = userList.count();
         except Exception:
             res["code"] = "500";
             res["err_msg"] = '获取用户失败';
