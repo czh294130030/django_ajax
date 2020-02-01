@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^edit/(\d+)$', views.edit, name="edit"),  # 修改
     url(r'getList', views.getList),  # 获取列表
     url(r'getItem', views.getItem),  # 获取对象
+    url(r'^delItem/(\d+)$', views.delItem),  # 删除对象
 ]

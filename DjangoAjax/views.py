@@ -37,6 +37,18 @@ def add(request):
     return JsonResponse(res);
 
 
+# 删除用户
+def delItem(request, id):
+    res = {"code": "200", "err_msg": "", "data": ""};
+    try:
+        item = User.objects.get(id=id);
+        item.delete();
+    except Exception:
+        res["code"] = "500";
+        res["err_msg"] = '删除用户失败';
+    return JsonResponse(res);
+
+
 # 修改用户
 def edit(request, id):
     if request.method == "GET":

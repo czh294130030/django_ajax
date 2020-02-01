@@ -41,7 +41,7 @@
             <td>{{ item.modify_date }}</td>
             <td>
                 <a href="javascript:void(0);" v-on:click="gotoEdit(item.id)">修改</a>
-                <a href="javascript:void(0);" v-on:click="del(item.id)">删除</a>
+                <a href="javascript:void(0);" v-on:click="del(item.id,item.name)">删除</a>
             </td>
         </tr>
     </table>
@@ -82,8 +82,26 @@
                 window.location.href = '/add';
             }, gotoEdit(id) {//跳转到编辑页面
                 window.location.href = '/edit/' + id;
-            }, del(id) {//删除
-                alert(id);
+            }, del(id, name) {//删除
+                vm = this;
+                layer.confirm('确定要删除【' + name + '】', function (index) {
+                    layer.close(index);
+                    vm.loading_index = layer.load(0, {shade: 0.5});
+                    $.ajax({
+                        url: "/delItem/" + id,
+                        type: "post",
+                        success: function (res) {
+                            if (res.code == "200") {
+                                vm.getList();
+                            } else {
+                                layer.alert(res.err_msg, {icon: 5});
+                            }
+
+                        }, complete: function () {
+                            layer.close(vm.loading_index);
+                        }
+                    });
+                });
             }
         }
     });
