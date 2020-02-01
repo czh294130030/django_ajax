@@ -8,6 +8,7 @@
     <script src="{% static 'js/vue.min.js' %}"></script>
     <script src="{% static 'js/ajax_setup.js' %}"></script>
     <script src="{% static 'js/layer-v3.1.1/layer/layer.js' %}"></script>
+    <script src="{% static 'js/common.js' %}"></script>
 </head>
 {#    解决冲突 Django Vue {{ }} 有数据 不显示#}
 {% verbatim %}
@@ -38,7 +39,7 @@
             <td>{{ item.name }}</td>
             <td>{{ item.age }}</td>
             <td>{{ item.password }}</td>
-            <td>{{ item.modify_date }}</td>
+            <td>{{ item.modify_date|formatDate }}</td>
             <td>
                 <a href="javascript:void(0);" v-on:click="gotoEdit(item.id)">修改</a>
                 <a href="javascript:void(0);" v-on:click="del(item.id,item.name)">删除</a>
@@ -55,6 +56,18 @@
             loading_index: '',
             search_model: {user_no: '', name: ''},//搜索条件
             users: [],//查询结果
+        },
+        filters: {//时间过滤器
+            formatDate: function (value) {
+                var date = new Date(value);
+                var year = date.getFullYear();
+                var month = common.padDate(date.getMonth() + 1);
+                var day = common.padDate(date.getDate());
+                var hours = common.padDate(date.getHours());
+                var minutes = common.padDate(date.getMinutes());
+                var seconds = common.padDate(date.getSeconds());
+                return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ":" + seconds;
+            }
         },
         created: function () {
             this.getList();

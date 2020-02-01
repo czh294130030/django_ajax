@@ -6,3 +6,6 @@ common.get_id = function () {
     var id = url_array[url_array.length - 1]
     return id;
 }
+common.padDate = function (value) {
+    return value < 10 ? '0' + value : value;
+}
