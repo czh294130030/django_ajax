@@ -10,6 +10,7 @@
     <script src="{% static 'js/layer-v3.1.1/layer/layer.js' %}"></script>
 </head>
 <body>
+{% csrf_token %}
 {#    解决冲突 Django Vue {{ }} 有数据 不显示#}
 {% verbatim %}
 <div id="app">

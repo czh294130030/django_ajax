@@ -12,6 +12,8 @@
     <script src="{% static 'js/common.js' %}"></script>
     <script src="{% static 'js/custom-pagination/custom-pagination.min.js' %}"></script>
 </head>
+<body>
+{% csrf_token %}
 {#    解决冲突 Django Vue {{ }} 有数据 不显示#}
 {% verbatim %}
 <div id="app">
@@ -77,7 +79,7 @@
         },
         methods: {
             search() {
-                this.search_model.currentPage=1;
+                this.search_model.currentPage = 1;
                 this.search_model.is_init = true;
                 this.getList();
             }, getList() {
@@ -128,7 +130,7 @@
                         type: "post",
                         success: function (res) {
                             if (res.code == "200") {
-                                vm.search_model.currentPage=1;
+                                vm.search_model.currentPage = 1;
                                 vm.search_model.is_init = true;
                                 vm.getList();
                             } else {

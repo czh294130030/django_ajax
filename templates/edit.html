@@ -11,6 +11,7 @@
     <script src="{% static 'js/common.js' %}"></script>
 </head>
 <body>
+{% csrf_token %}
 {#    解决冲突 Django Vue {{ }} 有数据 不显示#}
 {% verbatim %}
 <div id="app">
