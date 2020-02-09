@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 
 from DjangoAjax import views
+from System import views as OrgView
 
 urlpatterns = [
     # 用户
@@ -27,4 +28,7 @@ urlpatterns = [
     url(r'getList', views.getList),  # 获取列表
     url(r'getItem', views.getItem),  # 获取对象
     url(r'^delItem/(\d+)$', views.delItem),  # 删除对象
+
+    # 组织
+    url(r'^orgindex/$', OrgView.index, name="orgindex"),  # 首页
 ]
