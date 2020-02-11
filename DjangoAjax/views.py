@@ -1,12 +1,13 @@
 import json
 from datetime import datetime
 
+from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 
 # Create your views here.
-from DjangoAjax.models import User
+from DjangoAjax.models import User, Position, UserPosition
 
 # 路由跳转到首页
 from PublicMethod.common import model2json
@@ -21,18 +22,31 @@ def add(request):
     if request.method == "GET":
         return render(request, 'add.html', locals())
     res = {"code": "200", "err_msg": "", "data": ""};
-    try:
-        user_str = request.POST.get('user_str');
-        user_json = json.loads(user_str);
-        User.objects.create(user_no=user_json['user_no']
-                            , name=user_json['name']
-                            , age=user_json['age']
-                            , password=user_json['password']
-                            , create_date=datetime.now()
-                            , modify_date=datetime.now());
-    except Exception:
-        res["code"] = "500";
-        res["err_msg"] = '添加用户失败';
+    user_str = request.POST.get('user_str');
+    user_json = json.loads(user_str);
+    # 显式的开启一个事务
+    with transaction.atomic():
+        # 创建事务保存点
+        save_id = transaction.savepoint()
+        try:
+            # 添加人员
+            User.objects.create(user_no=user_json['user_no']
+                                , name=user_json['name']
+                                , age=user_json['age']
+                                , password=user_json['password']
+                                , create_date=datetime.now()
+                                , modify_date=datetime.now());
+            # 添加人员岗位
+            UserPosition.objects.create(user_no=user_json['user_no']
+                                        , pos_no=user_json['pos_no']
+                                        , create_date=datetime.now()
+                                        , modify_date=datetime.now());
+            # 提交订单成功，显式的提交一次事务
+            transaction.savepoint_commit(save_id)
+        except Exception:
+            res["code"] = "500";
+            res["err_msg"] = '添加用户失败';
+            transaction.savepoint_rollback(save_id);
     return JsonResponse(res);
 
 
@@ -84,6 +98,22 @@ def getItem(request):
         return JsonResponse(res);
 
 
+# 根据用户编码获取对象
+def getItemByNo(request):
+    if request.method == 'POST':
+        res = {"code": "200", "err_msg": "", "data": ""};
+        try:
+            user_no = request.POST.get('user_no');
+            userlist = User.objects.filter(user_no=user_no).values();
+            if (userlist.count() > 0):
+                item = list(userlist)[0];
+                res['data'] = item;
+        except Exception:
+            res["code"] = "500";
+            res["err_msg"] = '获取用户失败';
+        return JsonResponse(res);
+
+
 # 获取用户列表
 def getList(request):
     if request.method == 'POST':
@@ -107,3 +137,15 @@ def getList(request):
             res["code"] = "500";
             res["err_msg"] = '获取用户失败';
         return JsonResponse(res);
+
+
+# 获取岗位列表
+def getPositionList(request):
+    res = {"code": "200", "err_msg": "", "data": ""};
+    try:
+        postionList = Position.objects.all().order_by('pos_no').values();
+        res["data"] = list(postionList);
+    except Exception:
+        res["code"] = "500";
+        res["err_msg"] = '获取岗位失败';
+    return JsonResponse(res);

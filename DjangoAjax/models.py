@@ -9,13 +9,13 @@ class User(models.Model):
     create_date = models.DateTimeField('创建时间', null=True);
     modify_date = models.DateTimeField('修改时间', null=True);
 # 岗位
-class Postion(models.Model):
+class Position(models.Model):
     pos_no = models.CharField('岗位编码', max_length=200, null=True);
     pos_name = models.CharField('岗位名称', max_length=200, null=True);
     create_date = models.DateTimeField('创建时间', null=True);
     modify_date = models.DateTimeField('修改时间', null=True);
 # 人员岗位
-class UserPostion(models.Model):
+class UserPosition(models.Model):
     user_no = models.CharField('用户账户', max_length=200, null=True);
     pos_no = models.CharField('岗位编码', max_length=200, null=True);
     create_date = models.DateTimeField('创建时间', null=True);
