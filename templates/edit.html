@@ -30,6 +30,12 @@
             <td><input type="number" v-model="user.age"/></td>
         </tr>
         <tr>
+            <td>岗位</td>
+            <td><select v-model="user.pos_id">
+                <option v-for="(item,index) in positionList" v-bind:value="item.id">{{item.pos_name}}</option>
+            </select></td>
+        </tr>
+        <tr>
             <td>密码</td>
             <td><input type="text" v-model="user.password"/></td>
         </tr>
@@ -46,13 +52,52 @@
         el: '#app',
         data: {
             loading_index: '',
-            user: {user_no: '', name: '', age: 18, password: ''},
+            user: {user_no: '', name: '', age: 18, password: '', pos_id: ''},
+            positionList: [],
         },
         created: function () {
             var id = common.get_id(id);//从url获取修改主键
             this.getItem(id);
+            this.getPositionList();
         },
         methods: {
+            isUserNOExists(user_no, user_id) {//根据用户编码获取对象
+                flag = false;
+                vm = this;
+                $.ajax({
+                    url: "/isUserNOExists/",
+                    type: "post",
+                    async: false,
+                    data: {user_no: user_no, user_id: user_id},
+                    success: function (res) {
+                        if (res.code == "200") {
+                            user = res.data;
+                            if (user != undefined && user != null && user != '') {
+                                flag = true;
+                            }
+                        } else {
+                            layer.alert(res.err_msg, {icon: 5});
+                        }
+
+                    }, complete: function () {
+                    }
+                });
+                return flag;
+            },
+            getPositionList() {
+                $.ajax({
+                    url: "/getPositionList/",
+                    type: "get",
+                    success: function (res) {
+                        if (res.code == "200") {
+                            vm.positionList = res.data;
+                        } else {
+                            layer.alert(res.err_msg, {icon: 5});
+                        }
+                    }, complete: function () {
+                    }
+                });
+            },
             getItem(id) {//获取对象
                 vm = this;
                 vm.loading_index = layer.load(0, {shade: 0.5});
@@ -107,6 +152,11 @@
                 }
                 if (this.user.password == '') {
                     layer.alert('请输入密码', {icon: 5});
+                    return false;
+                }
+                var flag = vm.isUserNOExists(vm.user.user_no, vm.user.id);
+                if (flag) {
+                    layer.alert('账户【' + vm.user.user_no + '】已经存在', {icon: 5});
                     return false;
                 }
                 return true;

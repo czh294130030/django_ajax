@@ -75,17 +75,20 @@
                     }
                 });
             },
-            getItemByNo(user_no) {//根据用户编码获取对象
-                var user = {};
+            isUserNOExists(user_no, user_id) {//根据用户编码获取对象
+                flag = false;
                 vm = this;
                 $.ajax({
-                    url: "/getItemByNo/",
+                    url: "/isUserNOExists/",
                     type: "post",
                     async: false,
-                    data: {user_no: user_no},
+                    data: {user_no: user_no, user_id: user_id},
                     success: function (res) {
                         if (res.code == "200") {
                             user = res.data;
+                            if (user != undefined && user != null && user != '') {
+                                flag = true;
+                            }
                         } else {
                             layer.alert(res.err_msg, {icon: 5});
                         }
@@ -93,7 +96,7 @@
                     }, complete: function () {
                     }
                 });
-                return user;
+                return flag;
             },
             add() {//添加
                 if (!this.check()) {
@@ -132,9 +135,9 @@
                     layer.alert('请输入密码', {icon: 5});
                     return false;
                 }
-                var user = vm.getItemByNo(vm.user.user_no);
-                if (user != undefined && user != null && user != '') {
-                    layer.alert('账户【' + user.user_no + '】已经存在', {icon: 5});
+                var flag = vm.isUserNOExists(vm.user.user_no, '');
+                if (flag) {
+                    layer.alert('账户【' + vm.user.user_no + '】已经存在', {icon: 5});
                     return false;
                 }
                 return true;
