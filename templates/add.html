@@ -30,8 +30,8 @@
         </tr>
         <tr>
             <td>岗位</td>
-            <td><select v-model="user.pos_no">
-                <option v-for="(item,index) in positionList" v-bind:value="item.pos_no">{{item.pos_name}}</option>
+            <td><select v-model="user.pos_id">
+                <option v-for="(item,index) in positionList" v-bind:value="item.id">{{item.pos_name}}</option>
             </select></td>
         </tr>
         <tr>
@@ -51,7 +51,7 @@
         el: '#app',
         data: {
             loading_index: '',
-            user: {user_no: '', name: '', age: 18, password: '', pos_no: ''},
+            user: {user_no: '', name: '', age: 18, password: '', pos_id: ''},
             positionList: [],
         },
         created: function () {
@@ -66,7 +66,7 @@
                         if (res.code == "200") {
                             vm.positionList = res.data;
                             if (vm.positionList != undefined && vm.positionList != null && vm.positionList.length > 0) {
-                                vm.user.pos_no = vm.positionList[0].pos_no;
+                                vm.user.pos_id = vm.positionList[0].id;
                             }
                         } else {
                             layer.alert(res.err_msg, {icon: 5});
