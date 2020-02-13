@@ -37,11 +37,15 @@ def add(request):
                 , user_no=user_json['user_no']
                 , name=user_json['name']
                 , age=user_json['age']
-                , password=user_json['password']);
+                , password=user_json['password']
+                , create_date=datetime.now()
+                , modify_date=datetime.now());
             # 添加人员岗位
             UserPosition.objects.create(
                 user_id=user_id
-                , position_id=user_json['pos_id']);
+                , position_id=user_json['pos_id']
+                , create_date=datetime.now()
+                , modify_date=datetime.now());
             # 提交订单成功，显式的提交一次事务
             transaction.savepoint_commit(save_id)
         except Exception as e:
@@ -91,7 +95,9 @@ def edit(request, id):
             # 添加人员岗位
             UserPosition.objects.create(
                 user_id=item.id
-                , position_id=user_json['pos_id']);
+                , position_id=user_json['pos_id']
+                , create_date=datetime.now()
+                , modify_date=datetime.now());
             # 提交订单成功，显式的提交一次事务
             transaction.savepoint_commit(save_id);
         except Exception as e:

@@ -16,9 +16,9 @@ STATUS = (
 class BaseClass(models.Model):
     # Django Model使用UUID作为主键
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False);
-    create_date = models.DateTimeField('创建时间', default=datetime.now());
+    create_date = models.DateTimeField('创建时间', null=True);
     create_user = models.UUIDField('创建人', null=True);
-    modify_date = models.DateTimeField('修改时间', default=datetime.now());
+    modify_date = models.DateTimeField('修改时间', null=True);
     modify_user = models.UUIDField('修改人', null=True);
     status = models.CharField('状态', max_length=1, choices=STATUS, default=VALID);
 
