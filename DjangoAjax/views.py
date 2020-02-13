@@ -167,13 +167,30 @@ def getList(request):
             userList = User.objects.filter(
                 Q(status=VALID)
                 & Q(user_no__contains=search_user["user_no"])
-                & Q(name__contains=search_user["name"])).order_by('-modify_date').values();
+                & Q(name__contains=search_user["name"])).order_by('-modify_date');
             currentPage = int(search_user["currentPage"]);
             itemsPerPage = int(search_user["itemsPerPage"]);
             startIndex = (currentPage - 1) * itemsPerPage;
             endIndex = currentPage * itemsPerPage;
             pageList = userList[startIndex:endIndex];
-            res["data"] = list(pageList);
+            # 创建json集合
+            list_json = [];
+            # 循环学生信息，并根据主外键获取岗位信息
+            for item in pageList:
+                pos_no = '';
+                pos_name = '';
+                userposition = item.userposition_set.first();
+                if userposition is not None:
+                    position = userposition.position;
+                    if position is not None:
+                        pos_no = position.pos_no;
+                        pos_name = position.pos_name;
+                # 创建json对象，并添加到对象集合
+                item_json = model2json(item);
+                item_json['pos_no'] = pos_no;
+                item_json['pos_name'] = pos_name;
+                list_json.append(item_json);
+            res["data"] = list_json;
             res["total"] = userList.count();
         except Exception as e:
             res["code"] = "500";

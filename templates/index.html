@@ -35,6 +35,7 @@
             <th>姓名</th>
             <th>年龄</th>
             <th>密码</th>
+            <th>岗位</th>
             <th>修改时间</th>
             <th>操作</th>
         </tr>
@@ -43,6 +44,7 @@
             <td>{{ item.name }}</td>
             <td>{{ item.age }}</td>
             <td>{{ item.password }}</td>
+            <td>{{ item.pos_name }}</td>
             <td>{{ item.modify_date|formatDate }}</td>
             <td>
                 <a href="javascript:void(0);" v-on:click="gotoEdit(item.id)">修改</a>
@@ -64,7 +66,8 @@
         },
         filters: {//时间过滤器
             formatDate: function (value) {
-                var date = new Date(value);
+                var sdtime1 = new Date(value);
+                var date = new Date(sdtime1.setHours(sdtime1.getHours() - 8))//小时
                 var year = date.getFullYear();
                 var month = common.padDate(date.getMonth() + 1);
                 var day = common.padDate(date.getDate());
