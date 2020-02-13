@@ -47,6 +47,7 @@ def add(request):
         except Exception as e:
             res["code"] = "500";
             res["err_msg"] = '添加用户失败';
+            # 回滚提交
             transaction.savepoint_rollback(save_id);
     return JsonResponse(res);
 
@@ -69,19 +70,35 @@ def edit(request, id):
     if request.method == "GET":
         return render(request, 'edit.html', locals());
     res = {"code": "200", "err_msg": "", "data": ""};
-    try:
-        item = User.objects.get(id=id);
-        user_str = request.POST.get('user_str');
-        user_json = json.loads(user_str);
-        item.user_no = user_json['user_no'];
-        item.name = user_json['name'];
-        item.password = user_json['password'];
-        item.age = user_json['age'];
-        item.modify_date = datetime.now();
-        item.save();
-    except Exception as e:
-        res["code"] = "500";
-        res["err_msg"] = '修改用户失败';
+    user_str = request.POST.get('user_str');
+    user_json = json.loads(user_str);
+    # 显式的开启一个事务
+    with transaction.atomic():
+        # 创建事务保存点
+        save_id = transaction.savepoint()
+        try:
+            # 修改用户
+            item = User.objects.get(id=id);
+            item.user_no = user_json['user_no'];
+            item.name = user_json['name'];
+            item.password = user_json['password'];
+            item.age = user_json['age'];
+            item.modify_date = datetime.now();
+            item.save();
+            # 删除人员岗位关系
+            UserPosition.objects.filter(
+                Q(user_id=item.id)).delete();
+            # 添加人员岗位
+            UserPosition.objects.create(
+                user_id=item.id
+                , position_id=user_json['pos_id']);
+            # 提交订单成功，显式的提交一次事务
+            transaction.savepoint_commit(save_id);
+        except Exception as e:
+            res["code"] = "500";
+            res["err_msg"] = '修改用户失败';
+            # 回滚提交
+            transaction.savepoint_rollback(save_id);
     return JsonResponse(res);
 
 

@@ -25,6 +25,13 @@ update djangodemo.sys_position set status=0 where id='71600db34d9d11eabf8500ff6d
 SELECT * FROM djangodemo.sys_user order by create_date desc;
 SELECT * FROM djangodemo.sys_userposition order by create_date desc;
 SELECT * FROM djangodemo.sys_position order by create_date desc;
+
+select * from djangodemo.sys_user where user_no='X003';
+
+select u.name,p.pos_name,up.user_id,up.position_id,up.create_date from djangodemo.sys_user u
+inner join djangodemo.sys_userposition up on u.id=up.user_id
+inner join djangodemo.sys_position p on up.position_id=p.id
+where u.user_no='X003'
 -- 删除
 delete from  djangodemo.sys_user;
 delete from djangodemo.sys_postion;
