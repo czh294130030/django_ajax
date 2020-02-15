@@ -31,10 +31,8 @@ def add(request):
         save_id = transaction.savepoint()
         try:
             # 添加人员
-            user_id = uuid.uuid4();
-            User.objects.create(
-                id=user_id
-                , user_no=user_json['user_no']
+            userItem = User.objects.create(
+                user_no=user_json['user_no']
                 , name=user_json['name']
                 , age=user_json['age']
                 , password=user_json['password']
@@ -42,7 +40,7 @@ def add(request):
                 , modify_date=datetime.now());
             # 添加人员岗位
             UserPosition.objects.create(
-                user_id=user_id
+                user_id=userItem.id
                 , position_id=user_json['pos_id']
                 , create_date=datetime.now()
                 , modify_date=datetime.now());
