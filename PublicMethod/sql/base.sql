@@ -10,6 +10,11 @@ SET SQL_SAFE_UPDATES = 0;
 -- 开启保护模式，不能批量删除
 SET SQL_SAFE_UPDATES = 1;
 
+-- 备份数据库
+-- 管理员cmd：C:\Program Files\MySQL\MySQL Server 8.0\bin
+-- mysqldump -u root -h localhost -p djangodemo > djangodemo.sql
+-- P@ssw0rd
+
 -- 添加岗位
 SELECT REPLACE(uuid(), '-', '')
 insert into djangodemo.sys_position(id,pos_no,pos_name,create_date,modify_date,status)
