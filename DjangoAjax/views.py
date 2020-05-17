@@ -49,6 +49,7 @@ def add(request):
         except Exception as e:
             res["code"] = "500";
             res["err_msg"] = '添加用户失败';
+            res["ex_msg"] = e.args;
             # 回滚提交
             transaction.savepoint_rollback(save_id);
     return JsonResponse(res);
@@ -64,6 +65,7 @@ def delItem(request, id):
     except Exception as e:
         res["code"] = "500";
         res["err_msg"] = '删除用户失败';
+        res["ex_msg"] = e.args;
     return JsonResponse(res);
 
 
@@ -101,6 +103,7 @@ def edit(request, id):
         except Exception as e:
             res["code"] = "500";
             res["err_msg"] = '修改用户失败';
+            res["ex_msg"] = e.args;
             # 回滚提交
             transaction.savepoint_rollback(save_id);
     return JsonResponse(res);
@@ -126,6 +129,7 @@ def getItem(request):
         except Exception as e:
             res["code"] = "500";
             res["err_msg"] = '获取用户失败';
+            res["ex_msg"] = e.args;
         return JsonResponse(res);
 
 
@@ -150,6 +154,7 @@ def isUserNOExists(request):
         except Exception as e:
             res["code"] = "500";
             res["err_msg"] = '获取用户失败';
+            res["ex_msg"] = e.args;
         return JsonResponse(res);
 
 
@@ -193,6 +198,7 @@ def getList(request):
         except Exception as e:
             res["code"] = "500";
             res["err_msg"] = '获取用户失败';
+            res["ex_msg"] = e.args;
         return JsonResponse(res);
 
 
@@ -205,4 +211,5 @@ def getPositionList(request):
     except Exception as e:
         res["code"] = "500";
         res["err_msg"] = '获取岗位失败';
+        res["ex_msg"] = e.args;
     return JsonResponse(res);
