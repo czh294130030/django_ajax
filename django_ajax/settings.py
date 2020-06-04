@@ -25,7 +25,7 @@ SECRET_KEY = '7$_e^zyy#_qsm_-bgqzjlb3vv^(^not*0anpb3c2or_ppsui1s'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  #允许所有的IP地址访问
 
 
 # Application definition
